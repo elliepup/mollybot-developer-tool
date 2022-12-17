@@ -1,26 +1,34 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import { ColorSchemeProvider, ColorScheme, MantineProvider, Paper } from '@mantine/core';
+import { useLocalStorage, useHotkeys } from '@mantine/hooks';
+import AppShellLoader from './Components/AppShell';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
+        key: 'mantine-color-scheme',
+        defaultValue: 'dark',
+        getInitialValueInEffect: true,
+    });
+
+    const toggleColorScheme = (value?: ColorScheme) =>
+        setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
+
+    useHotkeys([['mod+J', () => toggleColorScheme()]]);
+
+    return (
+        <div className="App">
+            <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
+                <MantineProvider theme={{ colorScheme }}>
+                    <Paper>
+                        <AppShellLoader />
+                    </Paper>
+
+
+                </MantineProvider>
+            </ColorSchemeProvider>
+        </div>
+    );
 }
 
 export default App;
